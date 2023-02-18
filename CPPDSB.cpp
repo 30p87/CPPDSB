@@ -1,23 +1,25 @@
-#include "library.h"
+#include "CPPDSB.h"
 #include <fmt/core.h>
 #include "curl_easy.h"
 #include "curl_header.h"
 
-CPPDSB::CPPDSB(const std::string& username, const std::string& password) {
+CPPDSB::CPPDSB(const std::string &username, const std::string &password) {
     credentialParams.username = username;
     credentialParams.password = password;
     getToken();
 }
 
 std::string CPPDSB::getCredentialQuery() {
-    return fmt::format("bundleid={}&appversion={}&osversion={}&pushid={}&user={}&password={}", credentialParams.bundleid, credentialParams.appversion, credentialParams.osversion, credentialParams.pushid, credentialParams.username, credentialParams.password);
+    return fmt::format("bundleid={}&appversion={}&osversion={}&pushid={}&user={}&password={}",
+                       credentialParams.bundleid, credentialParams.appversion, credentialParams.osversion,
+                       credentialParams.pushid, credentialParams.username, credentialParams.password);
 }
 
 std::string CPPDSB::getTokenAuthQuery() {
     return fmt::format("authid={}", tokenParams.authid);
 }
 
-std::string CPPDSB::get(const std::string& url, const std::string& params) {
+std::string CPPDSB::get(const std::string &url, const std::string &params) {
     std::ostringstream str;
     curl::curl_ios<std::ostringstream> writer(str);
     curl::curl_easy easy(writer);
@@ -35,7 +37,7 @@ std::string CPPDSB::get(const std::string& url, const std::string& params) {
     return str.str();
 }
 
-Json::Value CPPDSB::getJson(const std::string& url, const std::string& params) {
+Json::Value CPPDSB::getJson(const std::string &url, const std::string &params) {
     std::string rawJson = get(url, params);
     Json::Value out;
     JSONCPP_STRING err;
@@ -65,8 +67,8 @@ std::list<plan> CPPDSB::getPlans() {
     std::list<plan> plans;
     struct plan plan;
     Json::Value rawPlans = getJson(fmt::format("{}/dsbtimetables", BASE_URL), getTokenAuthQuery());
-    for (const Json::Value& rawPlan : rawPlans) {
-        for (const Json::Value& i : rawPlan["Childs"]) {
+    for (const Json::Value &rawPlan: rawPlans) {
+        for (const Json::Value &i: rawPlan["Childs"]) {
             plan.id = i["id"].asString();
             plan.isHtml = i["ConType"].asInt() == 6;
             plan.uploadedDate = i["Date"].asString();
@@ -83,7 +85,7 @@ std::list<news> CPPDSB::getNews() {
     std::list<news> newsl;
     struct news news;
     Json::Value rawNews = getJson(fmt::format("{}/newstab", BASE_URL), getTokenAuthQuery());
-    for (const Json::Value& i : rawNews) {
+    for (const Json::Value &i: rawNews) {
         news.title = i["Title"].asString();
         news.date = i["Date"].asString();
         news.content = i["Detail"].asString();
@@ -96,13 +98,13 @@ std::list<posting> CPPDSB::getPostings() {
     std::list<posting> postings;
     struct posting posting;
     Json::Value rawPostings = getJson(fmt::format("{}/newstab", BASE_URL), getTokenAuthQuery());
-    for (const Json::Value& rawPosting : rawPostings) {
-            posting.id = rawPosting["id"].asString();
-            posting.uploadedDate = rawPosting["Date"].asString();
-            posting.title = rawPosting["Title"].asString();
-            posting.url = rawPosting["Detail"].asString();
-            posting.previewUrl += rawPosting["Preview"].asString();
-            postings.push_back(posting);
+    for (const Json::Value &rawPosting: rawPostings) {
+        posting.id = rawPosting["id"].asString();
+        posting.uploadedDate = rawPosting["Date"].asString();
+        posting.title = rawPosting["Title"].asString();
+        posting.url = rawPosting["Detail"].asString();
+        posting.previewUrl += rawPosting["Preview"].asString();
+        postings.push_back(posting);
     }
     return postings;
 }

@@ -24,6 +24,5 @@ endif()
 add_subdirectory(curlcpp)
 include_directories(${CURLCPP_SOURCE_DIR}/include)
 
-add_library(CPPDSB library.cpp)
+add_library(CPPDSB CPPDSB.cpp)
 target_link_libraries(CPPDSB PUBLIC curlcpp fmt curl jsoncpp)
-#target_include_directories(CPPDSB PUBLIC "${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/curlcpp")

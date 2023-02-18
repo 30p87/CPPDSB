@@ -1,5 +1,5 @@
-#ifndef CPPDSB_LIBRARY_H
-#define CPPDSB_LIBRARY_H
+#ifndef CPPDSB_CPPDSB_H
+#define CPPDSB_CPPDSB_H
 
 #include <string>
 #include <list>
@@ -59,4 +59,4 @@ private:
     int getToken();
 };
 
-#endif //CPPDSB_LIBRARY_H
+#endif //CPPDSB_CPPDSB_H
